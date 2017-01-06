@@ -1,0 +1,20 @@
+{
+  "name": "mi-api-rest",
+  "version": "1.0.0",
+  "description": "Api de prueba que incluye jwt",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Giancarlos Cercado",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mongoose": "^4.7.6"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
