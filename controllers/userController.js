@@ -30,12 +30,10 @@ function getUserById(req, res){
 function createUser(req, res){
     let usuario = new User()
     let d = req.body
-    usuario.nombres = d.nombres
-    usuario.apellidos = d.apellidos
-    usuario.fecha_nacimiento = d.fecha_nacimiento
-    usuario.estado_civil = d.estado_civil
-    usuario.profesion = d.profesion
-    usuario.correo = d.correo
+    usuario.email = d.email
+    usuario.fullname = d.fullname
+    usuario.birth = d.birth
+    usuario.lastLogin = null
 
     usuario.save((err, usuarioStored) => {
 
