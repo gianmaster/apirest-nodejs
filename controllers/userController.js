@@ -28,23 +28,26 @@ function getUserById(req, res){
 }
 
 function createUser(req, res){
-    let usuario = new User()
-    let d = req.body
-    usuario.email = d.email
-    usuario.fullname = d.fullname
-    usuario.birth = d.birth
-    usuario.lastLogin = null
+    let usuario = new User({
+        email: req.body.email,
+        fullname: req.body.fullname,
+        birth: req.body.birth
+    })
 
-    usuario.save((err, usuarioStored) => {
+    usuario.createUser(usuario, (err, usuarioCreado) => {
 
         if(err) { res.status(500).send({message: `Error al registrar el usuario: ${err}`}) }
 
-        res.status(201).send({message: 'Usuario registrado correctamente', usuario: usuarioStored})
+        res.status(201).send({message: 'Usuario registrado correctamente', usuario: usuarioCreado})
+
     })
 }
 
 function updateUser(req, res){
-    console.log(`PUT /api/usuario/${req.params.userId}`);
+
+    if(req.body.password){
+        
+    }
 
     User.findByIdAndUpdate(req.params.userId, req.body, (err, usuario) => {
 

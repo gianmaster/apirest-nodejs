@@ -18,6 +18,15 @@ app.use(bodyParser.json());
 //rutas
 router(app);
 
+const util = require('./util/util')
+app.get('/test/:word', (req, res) => {
+    console.log(`entro con la palabra ${req.params.word}`)
+    util.getHash(req.params.word, function(hash){
+        res.status(200).send({ message: hash})
+    })
+    
+})
+
 const deploy = (app) => {
     app.listen(config.port, () => {
         console.log(`Servidor APIREST corriendo en el puerto :${config.port}`);

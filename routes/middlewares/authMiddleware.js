@@ -10,8 +10,17 @@ function isAuth(req, res, next){
         return res.status(403).send({message: 'No tienes cabecera de autorizacion'})
     }
 
-    const token = req.headers.authorization.split(' ')[1]
-    const payload = jwt.decode(token, config.SECRET_TOKEN)
+    const myToken = req.headers.authorization.split(' ')[1]
+    let payload = null
+    if(myToken.split('.').length !== 3){
+        return res.status(403).send({message: 'Token de acceso mal formado '})
+    }
+    
+    try{
+        payload = jwt.decode(myToken, config.SECRET_TOKEN, false)
+    }catch(err){
+        return res.status(403).send({message: 'Token no valido'})
+    }
 
     //verificacion de token valido
     if(payload.exp <= moment().unix()) { 

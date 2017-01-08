@@ -4,42 +4,57 @@
 const mongoose = require('mongoose')
 const User = require('../models/user')
 const service = require('../services/index')
-const bcrypt = require('bcrypt-nodejs')
+const util = require('../util/util')
 
 function signUp(req, res){
+    if(!req.body.email && !req.body.password || !req.body.fullname) {res.status(500).send({message: `Debe ingresar fullname, email y password`})}
     const user = new User({
         email: req.body.email,
-        fullname: req.body.fullname,
-        birth: req.body.birth
-    });
+        fullname: req.body.fullname
+    })
 
-    user.save((err) => {
+    //generar password
+    util.getHash(user.password, (encryptedPass) => {
+
+        user.password = encryptedPass
+        user.save((err) => {
         if(err) { res.status(500).send({message: `Error al crear al usuario: ${err}`})}
 
         return res.status(200).send({ token: service.createToken(user)})
     })
+
+    })
+
 }
 
 function signIn(req, res){
-    const pEmail = req.body.email.toLowercase().trim()
+    
+    if(!req.body.email && !req.body.password) {res.status(500).send({message: `Debe ingresar email y password`})}
+    const pEmail = req.body.email.toLowerCase().trim()
     const pPassword = req.body.password
     User.findOne({email: pEmail}, (err, user) => {
-        if(err) { res.status(500).send({message: `Error al tratar de validar los datos del usuario: ${err}`})}
+        
+        if(err) { 
+            return res.status(500).send({message: `Error al tratar de validar los datos del usuario: ${err}`})
+        }
 
-        if(!user) { res.status(404).send({message: 'Credenciales incorrectos'})}
+        if(!user) { 
+            return res.status(401).send({message: 'Credenciales incorrectos'})
+        }
 
-        bcrypt.genSalt(10, (err, salt) => {
-            if(err) { res.status(500).send({message: `Se presento un error al tratar de validar sus credenciales de acceso: ${err}`})}
-
-            bcrypt.hash(pPassword, salt, null, (err, hash) => {
-                if(err) { res.status(500).send({message: `Se presento un error al tratar de validar sus credenciales de acceso: ${err}`})}
-
-                if(user.password !== hash){ res.status(500).send({message: 'Credenciales incorrectos'})}
-
-                return res.status(200).send({ token: service.createToken(user)})
+        //validacion del password
+        user.comparePassword(pPassword, (err, isMatch) => {
             
-            })
+            if(err) { return res.status(500).send({ message: 'Se presento un error al procesar esta accion'})}
+
+            if(isMatch) { return res.status(401).send({ message: 'Sus credenciales son incorrectas'})}
+
+            res.status(200).send({ token: service.createToken(user), message: 'Logoneo  exitoso'})
+
         })
+
+        res.status(200).send({ token: service.createToken(user), message: 'Logoneo exitoso' })
+        
     })
 }
 
