@@ -20,6 +20,7 @@ function isAuth(req, res, next){
         payload = jwt.decode(myToken, config.SECRET_TOKEN, false)
     }catch(err){
         return res.status(403).send({message: 'Token no valido'})
+        
     }
 
     //verificacion de token valido
